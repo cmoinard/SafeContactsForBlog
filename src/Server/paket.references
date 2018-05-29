@@ -3,3 +3,4 @@ group Server
   Saturn
   Fable.Remoting.Giraffe
   Microsoft.DotNet.Watcher.Tools
+  Bogus
