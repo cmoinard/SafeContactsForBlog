@@ -7,6 +7,13 @@ type Address = {
     city: string
 }
 
+module Address =
+    let toString address =
+        string address.number
+        + " " + address.street
+        + " " + address.postalCode
+        + " " + address.city
+
 type Person = {
     id: int
     firstName: string

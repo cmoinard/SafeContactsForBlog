@@ -3,27 +3,46 @@ module Persons.Views
 open Types
 
 open Fulma
+open Shared
+
+open Fable.Helpers.React
+
+let personHeader =
+    tr  []
+        [ th [] [ str "Id" ]
+          th [] [ str "First name" ]
+          th [] [ str "Last name" ]
+          th [] [ str "Address" ]
+        ]
+
+let personLine p =
+    tr  []
+        [ td [] [ p.id |> string |> str ]
+          td [] [ str p.firstName ]
+          td [] [ str p.lastName ]
+          td [] [ str (Address.toString p.address) ] ]
+
+let personsTable persons =
+    let lines =
+        persons
+        |> List.map personLine
+
+    Table.table [ Table.IsHoverable ]
+        [ thead [] [ personHeader ]
+          tbody [] lines
+        ]
 
 let containerBox (model : Model) (dispatch : Msg -> unit) =
     let content =
         if System.String.IsNullOrEmpty(model.message) |> not then
-            model.message
+            str model.message
         else
-            System.String.Join(
-                "\n",
-                model.persons
-                |> List.map (fun p -> p.firstName + " " + p.lastName))
+            personsTable model.persons
 
     Box.box' [ ]
         [ Field.div
             [ Field.IsGrouped ]
-            [ Control.p
-                [ Control.IsExpanded ]
-                [ Input.text
-                    [ Input.Disabled true
-                      Input.Value content ] ]             
-           ]
-       ]
+            [ content ] ]
 
 let root (model : Model) (dispatch : Msg -> unit) =
   Hero.hero
