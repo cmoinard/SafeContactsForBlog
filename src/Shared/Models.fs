@@ -23,4 +23,5 @@ type Person = {
 
 type PersonRepository = {
     getAll: unit -> Async<Person list>
+    delete: int -> Async<unit>
 }

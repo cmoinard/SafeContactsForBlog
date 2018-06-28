@@ -13,10 +13,10 @@ let publicPath = Path.GetFullPath "../Client/public"
 let port = 8085us
 
 let personRepository =
-    let generator =
+    let generate id  =
         Faker<Person>("fr")
             .CustomInstantiator(fun f ->
-                { id = f.Random.Number()
+                { id = id
                   firstName = f.Name.FirstName()
                   lastName = f.Name.LastName()
                   address = 
@@ -26,15 +26,26 @@ let personRepository =
                       city = f.Address.City()
                     }
                 })
+            .Generate()
 
-    let persons =
-        generator.Generate(10)
-        |> List.ofSeq
+    let initialNumberOfPersons = 10
+
+    let mutable persons =
+        [1..initialNumberOfPersons]
+        |> List.map generate
 
     {
         getAll = fun () -> async {
             do! Async.Sleep 2000
             return persons
+        }
+
+        delete = fun id -> async {
+            do! Async.Sleep 2000
+
+            persons <-
+                persons
+                |> List.filter (fun p -> p.id <> id)
         }
     }
 
