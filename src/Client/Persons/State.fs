@@ -10,13 +10,7 @@ let init () : Model * Cmd<Msg> =
         message = "Loading"
         persons = []
     }
-    let cmd =
-        Cmd.ofAsync
-            Server.api.getAll
-            ()
-            (Ok >> Loaded)
-            (Error >> Loaded)
-    model, cmd
+    model, Cmd.ofMsg Loading
 
 let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     let model' =
@@ -27,5 +21,23 @@ let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
             { message = "Error while loading persons" ; persons = [] }
         | Loaded (Ok persons) ->
             { message = "" ; persons = persons }
+        | _ ->
+            model
+    
+    let cmd =
+        match msg with
+        | Loading ->
+            Cmd.ofAsync
+                Server.api.getAll
+                ()
+                (Ok >> Loaded)
+                (Error >> Loaded)
+        | Delete p ->
+            Cmd.ofAsync
+                Server.api.delete
+                p.id
+                (fun _ -> Loading)
+                (Error >> Loaded)
+        | _ -> Cmd.none
             
-    model', Cmd.none
+    model', cmd

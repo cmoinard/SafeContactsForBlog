@@ -10,3 +10,4 @@ type Model = {
 type Msg =
     | Loading
     | Loaded of Result<Person list, exn>
+    | Delete of Person

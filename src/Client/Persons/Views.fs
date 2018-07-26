@@ -13,19 +13,25 @@ let personHeader =
           th [] [ str "First name" ]
           th [] [ str "Last name" ]
           th [] [ str "Address" ]
+          th [] []
         ]
 
-let personLine p =
+let personLine dispatch p =
     tr  []
         [ td [] [ p.id |> string |> str ]
           td [] [ str p.firstName ]
           td [] [ str p.lastName ]
-          td [] [ str (Address.toString p.address) ] ]
+          td [] [ str (Address.toString p.address) ]
+          td [] [ 
+            Button.a 
+                [ Button.OnClick (fun _ -> dispatch (Delete p)) ]
+                [ str "delete"] ]
+        ]            
 
-let personsTable persons =
+let personsTable dispatch persons =
     let lines =
         persons
-        |> List.map personLine
+        |> List.map (personLine dispatch)
 
     Table.table [ Table.IsHoverable ]
         [ thead [] [ personHeader ]
@@ -37,7 +43,7 @@ let containerBox (model : Model) (dispatch : Msg -> unit) =
         if System.String.IsNullOrEmpty(model.message) |> not then
             str model.message
         else
-            personsTable model.persons
+            personsTable dispatch model.persons
 
     Box.box' [ ]
         [ Field.div
