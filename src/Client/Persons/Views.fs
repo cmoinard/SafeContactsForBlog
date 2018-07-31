@@ -16,7 +16,8 @@ let personHeader =
           th [] []
         ]
 
-let personLine dispatch p =
+let personLine dispatch ps =
+    let p = ps.person
     tr  []
         [ td [] [ p.id |> string |> str ]
           td [] [ str p.firstName ]
@@ -24,9 +25,10 @@ let personLine dispatch p =
           td [] [ str (Address.toString p.address) ]
           td [] [ 
             Button.a 
-                [ Button.OnClick (fun _ -> dispatch (Delete p)) ]
+                [ Button.IsLoading ps.isBusy
+                  Button.OnClick (fun _ -> dispatch (Deleting p)) ]
                 [ str "delete"] ]
-        ]            
+        ]
 
 let personsTable dispatch persons =
     let lines =
