@@ -7,6 +7,15 @@ type PersonWithState = {
     isBusy: bool
 }
 
+module PersonWithState =
+    let create p = { person = p ; isBusy = false }
+    
+    let markAsBusy p ps =
+        if ps.person = p then
+            { ps with isBusy = true }
+        else
+            ps
+
 type Model = {
     message: string
     persons: PersonWithState list

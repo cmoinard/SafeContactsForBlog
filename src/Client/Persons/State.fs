@@ -4,6 +4,8 @@ open Elmish
 
 open Shared
 open Types
+open Persons.Types
+open Persons.Types
 
 let init () : Model * Cmd<Msg> =
     let model = {
@@ -24,19 +26,14 @@ let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
                 message = ""
                 persons =
                     persons
-                    |> List.map (fun p -> { person = p ; isBusy = false })
+                    |> List.map PersonWithState.create
             }
-        | Deleting p ->
-            let markPersonAsDeleting ps =
-                if ps.person = p then
-                    { ps with isBusy = true }
-                else
-                    ps
 
+        | Deleting p ->
             { model with
                 persons = 
                     model.persons
-                    |> List.map markPersonAsDeleting
+                    |> List.map (PersonWithState.markAsBusy p)
             }
         | Deleted (Error _) ->
             { message = "Error while deleting person" ; persons = [] }
