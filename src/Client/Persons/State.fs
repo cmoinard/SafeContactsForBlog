@@ -2,6 +2,7 @@ module Persons.State
 
 open Elmish
 
+open AsyncResult
 open Shared
 open Types
 open Persons.Types
@@ -12,52 +13,67 @@ let init () : Model * Cmd<Msg> =
         message = "Loading"
         persons = []
     }
-    model, Cmd.ofMsg Loading
+    model, Cmd.ofMsg <| Load (InProgress ())
+
+
+let updateLoadModel result =
+    match result with
+    | InProgress _ ->
+        { message = "Loading" ; persons = [] }
+    | Error _ ->
+        { message = "Error while loading persons" ; persons = [] }
+    | Done persons ->   
+        {
+            message = ""
+            persons =
+                persons
+                |> List.map PersonWithState.create
+        }
+
+let updateDeleteModel model result =
+    match result with
+    | InProgress p ->
+        { model with
+            persons = 
+                model.persons
+                |> List.map (PersonWithState.markAsBusy p)
+        }
+
+    | Error _ ->
+        { message = "Error while deleting person" ; persons = [] }
+    
+    | Done p ->
+        { model with
+            persons = 
+                model.persons
+                |> List.filter (fun ps -> ps.person <> p)
+        }
+
 
 let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     let model' =
         match msg with
-        | Loading ->
-            { message = "Loading" ; persons = [] }
-        | Loaded (Error _) ->
-            { message = "Error while loading persons" ; persons = [] }
-        | Loaded (Ok persons) ->
-            {
-                message = ""
-                persons =
-                    persons
-                    |> List.map PersonWithState.create
-            }
-
-        | Deleting p ->
-            { model with
-                persons = 
-                    model.persons
-                    |> List.map (PersonWithState.markAsBusy p)
-            }
-        | Deleted (Error _) ->
-            { message = "Error while deleting person" ; persons = [] }
-        | Deleted (Ok p) ->
-            { model with
-                persons = 
-                    model.persons
-                    |> List.filter (fun ps -> ps.person <> p)
-            }
-    
+        | Load r ->
+            updateLoadModel r
+        
+        | Delete r ->
+            updateDeleteModel model r
+            
     let cmd =
         match msg with
-        | Loading ->
-            Cmd.ofAsync
+        | Load (InProgress _) ->
+            AsyncResult.ofAsyncCmd
                 Server.api.getAll
                 ()
-                (Ok >> Loaded)
-                (Error >> Loaded)
-        | Deleting p ->
-            Cmd.ofAsync
+                Load
+
+        | Delete (InProgress p) ->
+            AsyncResult.ofAsyncCmdWithMap
                 Server.api.delete
-                p.id
-                (fun _ -> Deleted (Ok p))
-                (Error >> Deleted)
+                p
+                Delete
+                Person.getId
+
         | _ -> Cmd.none
             
     model', cmd

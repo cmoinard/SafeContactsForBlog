@@ -21,6 +21,9 @@ type Person = {
     address: Address
 }
 
+module Person =
+    let getId p = p.id
+
 type PersonRepository = {
     getAll: unit -> Async<Person list>
     delete: int -> Async<unit>

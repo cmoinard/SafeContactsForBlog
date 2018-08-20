@@ -1,6 +1,7 @@
 module Persons.Types
 
 open Shared
+open AsyncResult
 
 type PersonWithState = {
     person: Person
@@ -22,7 +23,5 @@ type Model = {
 }
 
 type Msg =
-    | Loading
-    | Loaded of Result<Person list, exn>
-    | Deleting of Person
-    | Deleted of Result<Person, exn>
+    | Load of AsyncResult<unit, Person list>
+    | Delete of AsyncResult<Person, Person>

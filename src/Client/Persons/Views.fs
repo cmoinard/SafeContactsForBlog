@@ -4,6 +4,7 @@ open Types
 
 open Fulma
 open Shared
+open AsyncResult
 
 open Fable.Helpers.React
 
@@ -26,7 +27,7 @@ let personLine dispatch ps =
           td [] [ 
             Button.a 
                 [ Button.IsLoading ps.isBusy
-                  Button.OnClick (fun _ -> dispatch (Deleting p)) ]
+                  Button.OnClick (fun _ -> dispatch (Delete (InProgress p))) ]
                 [ str "delete"] ]
         ]
 

@@ -8,6 +8,7 @@
     <Compile Include="../Shared/Route.fs" />
 
     <Compile Include="Server.fs" />
+    <Compile Include="AsyncResult.fs" />
 
     <Compile Include="Persons/Types.fs" />
     <Compile Include="Persons/State.fs" />
