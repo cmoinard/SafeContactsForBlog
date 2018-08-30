@@ -34,6 +34,14 @@ let personRepository =
         [1..initialNumberOfPersons]
         |> List.map generate
 
+    let nextPersonId () =
+        let lastPersonId =
+            persons
+            |> List.map Person.getId
+            |> List.max
+        
+        lastPersonId + 1
+
     {
         getAll = fun () -> async {
             do! Async.Sleep 2000
@@ -46,6 +54,15 @@ let personRepository =
             persons <-
                 persons
                 |> List.filter (fun p -> p.id <> id)
+        }
+
+        create = fun () -> async {
+            do! Async.Sleep 2000
+
+            let newPerson = generate <| nextPersonId ()
+            persons <-
+                [ newPerson ]
+                |> List.append persons
         }
     }
 
