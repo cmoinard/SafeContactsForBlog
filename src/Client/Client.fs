@@ -3,7 +3,7 @@ module Client
 open Elmish
 open Elmish.React
 
-open Persons
+open Main
 
 #if DEBUG
 open Elmish.Debug

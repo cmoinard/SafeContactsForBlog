@@ -14,6 +14,10 @@
     <Compile Include="Persons/State.fs" />
     <Compile Include="Persons/Views.fs" />
 
+    <Compile Include="Main/Types.fs" />
+    <Compile Include="Main/State.fs" />
+    <Compile Include="Main/Views.fs" />
+
     <Compile Include="Client.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
